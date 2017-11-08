@@ -1,7 +1,7 @@
 from pygame import camera
 from pygame import image as pyimage
 
-if __name__ == '__main__':
+def take_picture(given_name='test'):
     camera.init()
 
     list_of_cameras = camera.list_cameras()
@@ -14,5 +14,8 @@ if __name__ == '__main__':
         my_camera.start()
         surface = my_camera.get_image()
         print(surface)
-        pyimage.save(surface, 'test.bmp')
+        pyimage.save(surface, '{}.bmp'.format(given_name))
         my_camera.stop()
+
+if __name__ == '__main__':
+   take_picture('test')
