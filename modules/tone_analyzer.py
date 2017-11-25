@@ -8,7 +8,10 @@ def analyze_emotion(text):
                         username=SECRET_USERNAME,
                         password=SECRET_PASSWORD,
                     )
-    tone = tone_analyzer.tone(text, tones='emotion', content_type='text/plain', charset='utf-8')
+    tone = tone_analyzer.tone(json.loads(json.dumps({'text': text})), 
+    						  tones='emotion', 
+    						  content_type='application/json', 
+    						  sentences=False)
     return tone
 
 if __name__ == '__main__':
