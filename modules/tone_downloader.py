@@ -22,3 +22,4 @@ if __name__ == '__main__':
 				emote_list.append(poem)
 			with open(os.path.join(os.getcwd(), '../emotion_db', poetry_file + '.emo'), 'w') as wf:
 				wf.write(json.dumps(emote_list))
+				print('Successfully added {} to emotion db'.format(poetry_file))
