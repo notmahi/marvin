@@ -16,6 +16,9 @@ if __name__ == '__main__':
 			poetry_list = json.loads(f.read())
 			emote_list = []
 			for poem in poetry_list:
+				if poem['linecount'] > 400:
+					# if we have too many lines it's pointless as we can't print it anyway
+					continue
 				text = '\n'.join(poem['lines'])
 				tone = analyze_emotion(text)
 				poem['tone'] = tone
