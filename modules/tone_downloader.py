@@ -8,7 +8,7 @@ if __name__ == '__main__':
 	print (list_of_poets)
 	list_of_dled_emotions = os.listdir(os.path.join(os.getcwd(), '../emotion_db'))
 	print (list_of_dled_emotions)
-	to_download = [x in list_of_poets if (x + '.emo') not in list_of_dled_emotions]
+	to_download = [x for x in list_of_poets if ((x + '.emo') not in list_of_dled_emotions)]
 	print (to_download)
 
 	for poetry_file in to_download:
