@@ -1,0 +1,4 @@
+[submodule "face-api.js"]
+	path = face-api.js
+	url = https://github.com/justadudewhohacks/face-api.js.git
+	shallow = true
