@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "marvin"
+version = "0.1.0"
+description = "Emotion detecting bot that recognizes your emotions."
+authors = ["Mahi Shafiullah <mahi@cs.nyu.edu>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+asn1crypto = "1.4.0"
+certifi = "2021.10.8"
+cffi = "1.15.0"
+chardet = "4.0.0"
+cryptography = "36.0.1"
+enum34 = "1.1.10"
+idna = "3.3"
+ipaddress = "1.0.23"
+pycparser = "2.21"
+pygame = "2.1.2"
+pyOpenSSL = "22.0.0"
+pysolr = "3.9.0"
+requests = "2.27.1"
+six = "1.16.0"
+tinydb = "4.6.1"
+urllib3 = "1.26.8"
+watson-developer-cloud = "2.10.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
