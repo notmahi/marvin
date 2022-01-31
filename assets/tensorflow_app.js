@@ -71,20 +71,20 @@ if (getUserMediaSupported()) {
 
     else {
         instructionText.innerHTML = "Initializing assets 1/3";
-        const detectorModel = faceapi.loadTinyFaceDetectorModel("/face-api.js/weights");
+        const detectorModel = faceapi.loadTinyFaceDetectorModel("face-api.js/weights");
 
         detectorModel.then(() => {
             instructionText.innerHTML = "Initializing assets 2/3";
 
-            const landmarkModel = faceapi.loadFaceLandmarkModel("/face-api.js/weights");
+            const landmarkModel = faceapi.loadFaceLandmarkModel("face-api.js/weights");
 
             landmarkModel.then(() => {
                 instructionText.innerHTML = "Initializing assets 3/3";
 
-                const expressionModel = faceapi.loadFaceExpressionModel("/face-api.js/weights");
+                const expressionModel = faceapi.loadFaceExpressionModel("face-api.js/weights");
 
                 expressionModel.then(() => {
-                    faceapi.nets.ssdMobilenetv1.loadFromUri('/face-api.js/weights').then(function () {
+                    faceapi.nets.ssdMobilenetv1.loadFromUri('face-api.js/weights').then(function () {
                         model_emotion = true;
                         if (model) {
                             enableWebcamButton.style.display = "inline-flex";
