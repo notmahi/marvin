@@ -9,19 +9,18 @@ const webcam_canvas = document.getElementById('webcam_canvas');
 const cam_ctx = webcam_canvas.getContext('2d');
 const width = 640
 const height = 480
-var model = undefined;
+var model = true;
 var model_emotion = undefined;
 var control = false;
 // Error fallback when webcam access is denied.
 var errorCallback = function (error) {
     if (error.name == 'NotAllowedError') { instructionText.innerHTML = "Webcam Access Not Allowed"; }
     else if (error.name == 'PermissionDismissedError') { instructionText.innerHTML = "Permission Denied. Please provide Webcam Access."; }
-
 };
 
 function resetEverything() {
     control = false;
-    console.log("Stopping Everything.")
+    console.log("Stopping Everything.");
     const stream = video.srcObject;
     const tracks = stream.getTracks();
 
@@ -71,20 +70,30 @@ if (getUserMediaSupported()) {
     }
 
     else {
-        blazeface.load().then(function (loadedModel) {
-            model = loadedModel;
-            if (model_emotion) {
-                enableWebcamButton.style.display = "inline-flex";
-                instructionText.innerHTML = "Please provide Webcam Access."
-            }
-        });
+        instructionText.innerHTML = "Initializing assets 1/3";
+        const detectorModel = faceapi.loadTinyFaceDetectorModel("/face-api.js/weights");
 
-        tf.loadLayersModel('weights/ssd_mobilenetv1_model-weights_manifest.json', false).then(function (loadedModel) {
-            model_emotion = loadedModel;
-            if (model) {
-                enableWebcamButton.classList.remove("removed");
-                instructionText.innerHTML = "Please provide Webcam Access."
-            }
+        detectorModel.then(() => {
+            instructionText.innerHTML = "Initializing assets 2/3";
+
+            const landmarkModel = faceapi.loadFaceLandmarkModel("/face-api.js/weights");
+
+            landmarkModel.then(() => {
+                instructionText.innerHTML = "Initializing assets 3/3";
+
+                const expressionModel = faceapi.loadFaceExpressionModel("/face-api.js/weights");
+
+                expressionModel.then(() => {
+                    faceapi.nets.ssdMobilenetv1.loadFromUri('/face-api.js/weights').then(function () {
+                        model_emotion = true;
+                        if (model) {
+                            enableWebcamButton.style.display = "inline-flex";
+                            enableWebcamButton.classList.remove("removed");
+                            instructionText.innerHTML = "Please provide Webcam Access."
+                        }
+                    });
+                });
+            });
         });
     }
     enableWebcamButton.addEventListener('click', enableCam);
@@ -95,31 +104,21 @@ if (getUserMediaSupported()) {
 
 
 function predictWebcam() {
+    // Get the webcam image data.
     cam_ctx.drawImage(video, 0, 0, width, height);
-    const frame = cam_ctx.getImageData(0, 0, width, height);
-    // Now let's start classifying a frame in the stream.
-    model.estimateFaces(frame).then(function (predictions) {
-        if (predictions.length === 1) {
-            landmark = predictions[0]['landmarks'];
-            nosex = landmark[2][0];
-            nosey = landmark[2][1];
-            right = landmark[4][0];
-            left = landmark[5][0];
-            length = (left - right) / 2 + 5;
-            //Cropping the image.
-            const frame2 = cam_ctx.getImageData(nosex - length, nosey - length, 2 * length, 2 * length);
-            //Image is converted to tensor, resized, toBlackandWhite, then additional dimesion are added to match with [1, 48, 48, 1].
-            var image_tensor = tf.browser.fromPixels(frame2).resizeBilinear([48, 48]).mean(2).toFloat().expandDims(0).expandDims(-1)
-            //Predicting from image.
-            const result = model_emotion.predict(image_tensor);
-            const predictedValue = result.arraySync();
-            document.getElementById("angry").style.width = 100 * predictedValue['0'][0] + "%";
-            document.getElementById("disgust").style.width = 100 * predictedValue['0'][1] + "%";
-            document.getElementById("fear").style.width = 100 * predictedValue['0'][2] + "%";
-            document.getElementById("happy").style.width = 100 * predictedValue['0'][3] + "%";
-            document.getElementById("sad").style.width = 100 * predictedValue['0'][4] + "%";
-            document.getElementById("surprise").style.width = 100 * predictedValue['0'][5] + "%";
-            document.getElementById("neutral").style.width = 100 * predictedValue['0'][6] + "%";
+
+    faceapi.detectSingleFace(video).withFaceLandmarks().withFaceExpressions().then((predictions) => {
+        if (predictions) {
+            landmark = predictions['landmarks'];
+            var predictedValue = predictions['expressions'];
+            console.log(predictedValue);
+            document.getElementById("angry").style.width = 100 * predictedValue['angry'] + "%";
+            document.getElementById("disgust").style.width = 100 * predictedValue['disgusted'] + "%";
+            document.getElementById("fear").style.width = 100 * predictedValue['fearful'] + "%";
+            document.getElementById("happy").style.width = 100 * predictedValue['happy'] + "%";
+            document.getElementById("sad").style.width = 100 * predictedValue["sad"] + "%";
+            document.getElementById("surprise").style.width = 100 * predictedValue['surprised'] + "%";
+            document.getElementById("neutral").style.width = 100 * predictedValue['neutral'] + "%";
         }
         // Call this function again to keep predicting when the browser is ready.
         if (control)
