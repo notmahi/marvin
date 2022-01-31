@@ -70,20 +70,22 @@ if (getUserMediaSupported()) {
     }
 
     else {
-        instructionText.innerHTML = "Initializing assets 1/3";
+        instructionText.innerHTML = "Initializing assets 1/4";
         const detectorModel = faceapi.loadTinyFaceDetectorModel("face-api.js/weights");
 
         detectorModel.then(() => {
-            instructionText.innerHTML = "Initializing assets 2/3";
+            instructionText.innerHTML = "Initializing assets 2/4";
 
             const landmarkModel = faceapi.loadFaceLandmarkModel("face-api.js/weights");
 
             landmarkModel.then(() => {
-                instructionText.innerHTML = "Initializing assets 3/3";
+                instructionText.innerHTML = "Initializing assets 3/4";
 
                 const expressionModel = faceapi.loadFaceExpressionModel("face-api.js/weights");
 
                 expressionModel.then(() => {
+
+                    instructionText.innerHTML = "Initializing assets 4/4";
                     faceapi.nets.ssdMobilenetv1.loadFromUri('face-api.js/weights').then(function () {
                         model_emotion = true;
                         if (model) {
@@ -111,7 +113,6 @@ function predictWebcam() {
         if (predictions) {
             landmark = predictions['landmarks'];
             var predictedValue = predictions['expressions'];
-            console.log(predictedValue);
             document.getElementById("angry").style.width = 100 * predictedValue['angry'] + "%";
             document.getElementById("disgust").style.width = 100 * predictedValue['disgusted'] + "%";
             document.getElementById("fear").style.width = 100 * predictedValue['fearful'] + "%";
